@@ -1,5 +1,4 @@
 <div class="game-board">
-
      @for (item of grid; track $index) {
       @for (element of item; track $index) {
         <div class="box" (click)="onClick(grid.indexOf(item),$index)">
@@ -8,4 +7,5 @@
       }
      }
      <span>{{winner}}</span>
+     <button (click)="reset()">Restart</button>
 </div>

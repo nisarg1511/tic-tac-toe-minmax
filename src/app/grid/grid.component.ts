@@ -10,11 +10,12 @@ export class GridComponent implements OnInit {
   protected box: boolean[] | null[];
   protected grid: String[][] = [];
   protected isPlayerX: boolean;
-  protected winner: string = '';
+  protected winner: string;
   protected isBoardDisabled: boolean;
   constructor() { }
 
   ngOnInit(): void {
+    this.winner = '';
     for (let i = 0; i < 3; i++) {
       this.grid[i] = [];
       for (let j = 0; j < 3; j++) {
@@ -22,11 +23,19 @@ export class GridComponent implements OnInit {
       }
     }
   }
-
+  reset() {
+    this.ngOnInit();
+  }
   onClick(row: number, col: number) {
     if (this.grid[row][col] === '' && this.winner === '') {
       this.grid[row][col] = 'O';
-      this.computerMove();
+      this.evaluateWinner();
+      if (!this.winner) { // Only allow computer move if the game is not already won
+        setTimeout(() => {
+          this.computerMove();
+        }, 600);
+        this.evaluateWinner();
+      }
     }
   }
 
@@ -66,7 +75,7 @@ export class GridComponent implements OnInit {
 
   computerMove() {
     let bestScore = -Infinity;
-    let bestMove = { row: -1, col: -1 };
+    let bestMove = { row: 0, col: 0 };
     for (let i = 0; i < 3; i++) {
       for (let j = 0; j < 3; j++) {
         if (this.grid[i][j] === '') {
@@ -110,6 +119,16 @@ export class GridComponent implements OnInit {
       return true;
     }
     return false;
+  }
+
+  evaluateWinner() {
+    if (this.isWinner('X')) {
+      this.winner = 'X';
+    } else if (this.isWinner('O')) {
+      this.winner = 'O';
+    } else if (this.isBoardFull()) {
+      this.winner = 'Draw';
+    }
   }
 
   isBoardFull(): boolean {
